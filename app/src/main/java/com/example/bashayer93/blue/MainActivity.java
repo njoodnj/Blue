@@ -1,8 +1,11 @@
 package com.example.bashayer93.blue;
 
+import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.Intent;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.Settings;
 import android.support.design.widget.FloatingActionButton;
@@ -13,49 +16,135 @@ import android.telephony.TelephonyManager;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
-public class MainActivity extends AppCompatActivity {
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 
+public class MainActivity extends Activity {
+
+    EditText id, password;
+    String Id, Password;
+    Context ctx=this;
+    String ID=null, NAME=null, PASSWORD=null, EMAIL=null, ADDRESS=null, ROLE=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
-        TextView tvUIDS;
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.content_main);
+        id = (EditText) findViewById(R.id.NationalID);
+        password = (EditText) findViewById(R.id.passwordHP);
+    }
 
-        tvUIDS = (TextView)findViewById(R.id.tv_uids);
-        StringBuilder sb = new StringBuilder();
+    public void register_register(View v){
+        startActivity(new Intent(this,mainReg.class));
+    }
 
-        TelephonyManager telMan = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
+    public void main_login(View v){
+        Id = id.getText().toString();
+        Password = password.getText().toString();
 
-        sb.append("IMEI:" + telMan.getDeviceId() + "\n");
+        BackGround b = new BackGround();
+        b.execute(Id, Password);
 
-        sb.append("Android ID" + Settings.Secure.getString(getContentResolver(), Settings.Secure.ANDROID_ID + "\n"));
+    }
 
-        WifiManager wm =(WifiManager) getSystemService(Context.WIFI_SERVICE);
+    class BackGround extends AsyncTask<String, String, String> {
 
-        String mac_adr = wm.getConnectionInfo().getMacAddress();
-        if(mac_adr != null) {
+        @Override
+        protected String doInBackground(String... params) {
+            String id = params[0];
+            String password = params[1];
+            String data="";
+            int tmp;
 
-            sb.append("WLAN MAC Address:" + mac_adr + "\n");
+            try {
+                URL url = new URL("http://192.168.100.13/ES/login.php");
+                String urlParams = "r_id="+id+"&r_password="+password;
 
+                HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
+                httpURLConnection.setDoOutput(true);
+                OutputStream os = httpURLConnection.getOutputStream();
+                os.write(urlParams.getBytes());
+                os.flush();
+                os.close();
 
+                InputStream is = httpURLConnection.getInputStream();
+                while((tmp=is.read())!=-1){
+                    data+= (char)tmp;
+                }
+
+                is.close();
+                httpURLConnection.disconnect();
+
+                return data;
+            } catch (MalformedURLException e) {
+                e.printStackTrace();
+                return "Exception: "+e.getMessage();
+            } catch (IOException e) {
+                e.printStackTrace();
+                return "Exception: "+e.getMessage();
+            }
         }
-        else
-        {
-            sb.append("WLAN MAC Address: not supported on this device \n");
+
+        @Override
+        protected void onPostExecute(String s) {
+
+            try {
+                JSONObject root = new JSONObject(s);
+                JSONObject user_data = root.getJSONObject("user_data");
+                ID = user_data.getString("r_id");
+                NAME = user_data.getString("r_name");
+                PASSWORD = user_data.getString("r_password");
+                EMAIL = user_data.getString("r_email");
+                ADDRESS = user_data.getString("r_address");
+                ROLE= user_data.getString("r_role");
+            } catch (JSONException e) {
+                e.printStackTrace();
+
+            }
+            if( id.getText().toString().length() == 0 ){
+                id.setError("ID is required!");}
+            if( password.getText().toString().length() == 0 ){
+                password.setError( "Password is required!" );}
+            else {
+                if(ROLE.equals("resident") ||ROLE.equals("dependent") ){
+                    Intent i = new Intent(ctx, User_Home.class);
+                    i.putExtra("r_id", ID);
+                    i.putExtra("r_name", NAME);
+                    i.putExtra("r_password", PASSWORD);
+                    i.putExtra("r_email", EMAIL);
+                    i.putExtra("r_address", ADDRESS);
+                    startActivity(i);}
+                if (ROLE.equals("driver")){
+                    Intent i = new Intent(ctx, driverprofile.class);
+                    i.putExtra("r_id", ID);
+                    i.putExtra("r_name", NAME);
+                    startActivity(i);
+                }
+                if (ROLE.equals("security")){
+                    Intent i = new Intent(ctx, securityGuard.class);
+
+                    startActivity(i);
+                }
+                if (ROLE.equals("nothing")){
+                    s="username or password is incorrect";
+
+                    Toast.makeText(ctx, s, Toast.LENGTH_LONG).show();
+                    Intent i = new Intent(ctx, MainActivity.class);
+
+                    startActivity(i);
+                }}
         }
-        BluetoothAdapter ba =BluetoothAdapter.getDefaultAdapter();
-        if(ba !=null){
-            sb.append("blueTooth Adress:" + ba.getAddress() +"\n" );
-
-
-        }else {   sb.append("blueTooth Adress: not supported by this device \n" );
-        }
-
-        tvUIDS.setText(sb.toString());
     }
 }
+

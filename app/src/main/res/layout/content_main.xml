@@ -12,20 +12,73 @@
     tools:context="com.example.bashayer93.blue.MainActivity"
     tools:showIn="@layout/activity_main">
 
-    <TextView
-        android:id="@+id/tv_uids"
+
+
+
+
+
+    <EditText
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Hello World!" />
+        android:inputType="number"
+        android:ems="10"
+        android:id="@+id/NationalID"
+        android:background="#ffffff"
+        android:hint="National ID"
+        android:textColorHint="#b8b7b2"
+        android:textAlignment="center"
+
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <EditText
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:inputType="textPassword"
+        android:ems="10"
+        android:id="@+id/passwordHP"
+        android:background="#ffffff"
+        android:hint="Password"
+        android:textColorHint="#b8b7b2"
+        android:textAlignment="center"
+        android:layout_below="@+id/NationalID"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
+
+    <Button
+        android:onClick="main_login"
+        android:layout_width="50dp"
+        android:layout_height="25dp"
+        android:text="Login"
+        android:id="@+id/main_login"
+        android:textColor="#ffffff"
+        android:background="#999999"
+        android:layout_below="@+id/passwordHP"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp" />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="Large Text"
-        android:id="@+id/textView"
-        android:layout_below="@+id/tv_uids"
-        android:layout_toRightOf="@+id/tv_uids"
-        android:layout_toEndOf="@+id/tv_uids"
-        android:layout_marginTop="137dp" />
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Forget password?"
+        android:id="@+id/forgetpasword"
+        android:layout_marginTop="21dp"
+        android:layout_below="@+id/main_login"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text="register"
+        android:layout_width="150dp"
+        android:layout_height="35dp"
+        android:id="@+id/main_register"
+        android:clickable="true"
+        android:layout_marginTop="30dp"
+        android:onClick="register_register"
+        android:layout_below="@+id/forgetpasword"
+        android:layout_marginRight="13dp"
+        android:layout_marginEnd="13dp" />
+
+
 </RelativeLayout>
+
