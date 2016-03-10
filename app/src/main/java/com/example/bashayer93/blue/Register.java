@@ -1,16 +1,21 @@
+
 package com.example.bashayer93.blue;
+import android.bluetooth.BluetoothAdapter;
+import android.os.Bundle;
+import android.telephony.TelephonyManager;
+import android.view.View;
 
 import android.app.Activity;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.telephony.TelephonyManager;
+import android.provider.ContactsContract;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.RadioGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -46,13 +51,8 @@ public class Register extends Activity {
         r_reemail = (EditText) findViewById(R.id.reemail);
         r_address= (EditText) findViewById(R.id.address);
         r_policy= (CheckBox) findViewById(R.id.policy);
-
         Mac = (TextView)findViewById(R.id.mac);
         StringBuilder sb = new StringBuilder();
-
-        TelephonyManager telMan = (TelephonyManager)getSystemService(TELEPHONY_SERVICE);
-
-        sb.append("IMEI:" + telMan.getDeviceId() + "\n");
 
         BluetoothAdapter ba =BluetoothAdapter.getDefaultAdapter();
         if(ba !=null){
@@ -83,7 +83,6 @@ public class Register extends Activity {
         remail = r_reemail.getText().toString();
         address = r_address.getText().toString();
         mac =Mac.getText().toString();
-
         if( r_ID.getText().toString().length() == 0 ){
             r_ID.setError( "ID is required!" );}
         if( r_FullName.getText().toString().length() == 0 ){
@@ -133,7 +132,7 @@ public class Register extends Activity {
             try {
                 URL url = new URL("http://192.168.8.100/ES/register.php");
 
-                String urlParams = "id="+id+"&name="+name+"&pass="+pass+"&email="+email+"&address="+address +"&mac="+mac ;
+                String urlParams = "id="+id+"&name="+name+"&pass="+pass+"&email="+email+"&address="+address+"&mac=" +mac;
 
                 HttpURLConnection httpURLConnection = (HttpURLConnection) url.openConnection();
                 httpURLConnection.setDoOutput(true);
@@ -171,3 +170,4 @@ public class Register extends Activity {
     }
 
 }
+

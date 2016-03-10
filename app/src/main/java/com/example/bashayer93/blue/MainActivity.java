@@ -125,12 +125,6 @@ public class MainActivity extends Activity {
                     i.putExtra("r_email", EMAIL);
                     i.putExtra("r_address", ADDRESS);
                     startActivity(i);}
-                if (ROLE.equals("driver")){
-                    Intent i = new Intent(ctx, driverprofile.class);
-                    i.putExtra("r_id", ID);
-                    i.putExtra("r_name", NAME);
-                    startActivity(i);
-                }
                 if (ROLE.equals("security")){
                     Intent i = new Intent(ctx, securityGuard.class);
 
